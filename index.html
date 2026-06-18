@@ -282,13 +282,15 @@ function loadSavedImages(){
 
 // 图片替换
 async function handleReplace(file, key) {
+  let onlineFailed = false;
   // 1. 先尝试在线上传（如果在线）
   if (onlineMode && supabaseClient) {
     showToast('⏳ 正在上传...');
     try {
       const ok = await uploadOnline(key, file);
       if (ok) { return; }
-    } catch(e) { console.error('在线上传失败，回退到本地', e); }
+      onlineFailed = true; // 在线但上传失败，错误已在 uploadOnline 中提示
+    } catch(e) { console.error('在线上传失败，回退到本地', e); onlineFailed = true; }
   }
   // 2. 回退到本地压缩保存
   const reader = new FileReader();
@@ -305,7 +307,12 @@ async function handleReplace(file, key) {
       const imgEl = document.getElementById('img_' + key), phEl = document.getElementById('ph_' + key);
       if (imgEl) { imgEl.src = compressed; imgEl.style.display = 'block'; }
       if (phEl) { phEl.style.display = 'none'; }
-      showToast('✅ 已保存到本地（数据库未连接）');
+      // 区分「在线上传失败的兜底」和「本来就离线」两种情况
+      if (onlineFailed) {
+        showToast('⚠️ 在线同步失败，已暂存本地（见上方错误提示）');
+      } else {
+        showToast('✅ 已保存到本地（数据库未连接）');
+      }
     };
     img.src = evt.target.result;
   };
@@ -455,20 +462,25 @@ async function uploadOnline(key, file) {
   try {
     const fileName = key + '.jpg';
     console.log('⬆️ 开始上传:', fileName);
+    // ① 上传到 Storage 桶
     const { error: upError } = await supabaseClient.storage
       .from(BUCKET_NAME).upload(fileName, file, { upsert: true, contentType: 'image/jpeg' });
     console.log('📤 Storage upload result:', upError ? 'error: ' + upError.message : 'success');
-    if (upError && !upError.message.includes('The resource already exists')) throw upError;
-    
+    if (upError && !upError.message.toLowerCase().includes('already exists')) {
+      throw new Error('Storage 上传失败：' + upError.message);
+    }
+
+    // ② 取公开 URL
     const { data: urlData } = supabaseClient.storage.from(BUCKET_NAME).getPublicUrl(fileName);
     const publicUrl = urlData ? urlData.publicUrl : null;
     console.log('🔗 Public URL:', publicUrl);
-    if (!publicUrl) throw new Error('无法获取文件 URL');
-    
+    if (!publicUrl) throw new Error('无法获取文件 URL（桶可能不是 public）');
+
+    // ③ 写入数据表
     const { error: dbError } = await supabaseClient.from(TABLE_NAME).upsert({ key: key, url: publicUrl }, { onConflict: 'key' });
     console.log('📝 DB upsert result:', dbError ? 'error: ' + dbError.message : 'success');
-    if (dbError) throw dbError;
-    
+    if (dbError) throw new Error('数据表写入失败：' + dbError.message);
+
     const img = document.getElementById('img_' + key);
     const ph = document.getElementById('ph_' + key);
     if (img) { img.src = publicUrl + '?t=' + Date.now(); img.style.display = 'block'; }
@@ -477,8 +489,17 @@ async function uploadOnline(key, file) {
     return true;
   } catch (e) {
     console.error('❌ uploadOnline error:', e);
-    if (e.message && e.message.includes('Bucket not found')) {
-      showToast('❌ 缺少 Storage bucket：请在 Supabase 创建 trip-photos');
+    const msg = (e && e.message) ? e.message : String(e);
+    const low = msg.toLowerCase();
+    // 把真实错误原因暴露出来，而不是默默回退
+    if (low.includes('bucket not found')) {
+      showToast('❌ 找不到 Storage 桶：请在 Supabase 创建名为 ' + BUCKET_NAME + ' 的 bucket');
+    } else if (low.includes('row-level security') || low.includes('policy') ||
+               low.includes('unauthorized') || low.includes('403') ||
+               low.includes('permission') || low.includes('violates')) {
+      showToast('❌ 权限不足(RLS)：需给桶和表添加 anon 写入策略，详见说明');
+    } else {
+      showToast('❌ 上传失败：' + msg);
     }
     return false;
   }
