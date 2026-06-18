@@ -380,23 +380,34 @@ function clearAllImages(){
 // ===== 数据库初始化 =====
 async function initDatabase() {
   try {
-    if (typeof supabase !== 'undefined' && SUPABASE_ANON_KEY && SUPABASE_ANON_KEY.length > 20) {
-      supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-      const { error } = await supabaseClient.from(TABLE_NAME).select('count', { count: 'exact', head: true });
-      if (!error) {
-        onlineMode = true;
-        document.getElementById('dbStatus').textContent = '✅ 已连接数据库（照片在线同步）';
-        document.getElementById('dbStatus').className = 'db-status online';
-        await loadOnlineImages();
-      } else {
-        document.getElementById('dbStatus').textContent = '⚠️ 数据库表未创建：' + error.message;
-        document.getElementById('dbStatus').className = 'db-status error';
-      }
-    } else {
+    console.log('🔍 检查 supabase 对象:', typeof supabase !== 'undefined' ? '已加载' : '未加载');
+    if (typeof supabase === 'undefined') {
+      document.getElementById('dbStatus').textContent = '⚠️ 库未加载（请检查网络或刷新页面）';
+      document.getElementById('dbStatus').className = 'db-status error';
+      return;
+    }
+    if (!SUPABASE_ANON_KEY || SUPABASE_ANON_KEY.length < 20) {
       document.getElementById('dbStatus').textContent = '⚠️ API Key 未配置（使用默认图片）';
+      return;
+    }
+    supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    console.log('✅ supabase client 已创建');
+    
+    const { error, count } = await supabaseClient.from(TABLE_NAME).select('*', { count: 'exact', head: true });
+    console.log('📊 表查询结果:', { error, count });
+    
+    if (!error) {
+      onlineMode = true;
+      document.getElementById('dbStatus').textContent = '✅ 已连接数据库（照片在线同步）';
+      document.getElementById('dbStatus').className = 'db-status online';
+      await loadOnlineImages();
+    } else {
+      document.getElementById('dbStatus').textContent = '⚠️ 表查询失败：' + error.message + '（请确认表已创建）';
+      document.getElementById('dbStatus').className = 'db-status error';
     }
   } catch (e) {
-    document.getElementById('dbStatus').textContent = '⚠️ 数据库连接失败：' + (e.message || e);
+    console.error('❌ initDatabase error:', e);
+    document.getElementById('dbStatus').textContent = '⚠️ 数据库连接失败：' + (e.message || e) + '（请检查控制台日志）';
     document.getElementById('dbStatus').className = 'db-status error';
   }
 }
@@ -406,6 +417,7 @@ async function loadOnlineImages() {
   if (!onlineMode || !supabaseClient) return;
   try {
     const { data, error } = await supabaseClient.from(TABLE_NAME).select('key, url');
+    console.log('📥 加载在线照片:', data ? data.length : 0, '条');
     if (error || !data) return;
     data.forEach(item => {
       const img = document.getElementById('img_' + item.key);
@@ -413,7 +425,7 @@ async function loadOnlineImages() {
       if (img) { img.src = item.url; img.style.display = 'block'; }
       if (ph) { ph.style.display = 'none'; }
     });
-  } catch (e) {}
+  } catch (e) { console.error('loadOnlineImages error:', e); }
 }
 
 // 在线上传照片
@@ -421,12 +433,20 @@ async function uploadOnline(key, file) {
   if (!onlineMode || !supabaseClient) return false;
   try {
     const fileName = key + '.jpg';
+    console.log('⬆️ 开始上传:', fileName);
     const { error: upError } = await supabaseClient.storage
       .from(BUCKET_NAME).upload(fileName, file, { upsert: true, contentType: 'image/jpeg' });
+    console.log('📤 Storage upload result:', upError ? 'error: ' + upError.message : 'success');
     if (upError && !upError.message.includes('The resource already exists')) throw upError;
     
-    const { data: { publicUrl } } = supabaseClient.storage.from(BUCKET_NAME).getPublicUrl(fileName);
-    await supabaseClient.from(TABLE_NAME).upsert({ key: key, url: publicUrl }, { onConflict: 'key' });
+    const { data: urlData } = supabaseClient.storage.from(BUCKET_NAME).getPublicUrl(fileName);
+    const publicUrl = urlData ? urlData.publicUrl : null;
+    console.log('🔗 Public URL:', publicUrl);
+    if (!publicUrl) throw new Error('无法获取文件 URL');
+    
+    const { error: dbError } = await supabaseClient.from(TABLE_NAME).upsert({ key: key, url: publicUrl }, { onConflict: 'key' });
+    console.log('📝 DB upsert result:', dbError ? 'error: ' + dbError.message : 'success');
+    if (dbError) throw dbError;
     
     const img = document.getElementById('img_' + key);
     const ph = document.getElementById('ph_' + key);
@@ -435,7 +455,10 @@ async function uploadOnline(key, file) {
     showToast('✅ 已上传并同步到数据库');
     return true;
   } catch (e) {
-    console.error('Online upload failed:', e);
+    console.error('❌ uploadOnline error:', e);
+    if (e.message && e.message.includes('Bucket not found')) {
+      showToast('❌ 缺少 Storage bucket：请在 Supabase 创建 trip-photos');
+    }
     return false;
   }
 }
