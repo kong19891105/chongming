@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>崇明3日游行程</title>
+<style>
+:root{
+  --primary: #2a9d8f;
+  --primary-dark: #21867a;
+  --bg: #f2f3f5;
+  --card-bg: #ffffff;
+  --text: #333333;
+  --text-secondary: #666666;
+  --text-muted: #999999;
+  --radius: 16px;
+  --shadow: 0 4px 20px rgba(0,0,0,0.08);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans SC",sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  padding-bottom:24px;
+}
+.header{
+  background:linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color:white;
+  padding:18px 16px 50px;
+  text-align:center;
+  position:relative;
+  border-radius:0 0 var(--radius) var(--radius);
+  box-shadow:0 4px 15px rgba(42,157,143,0.3);
+}
+.header-title{
+  font-size:22px;
+  font-weight:700;
+  letter-spacing:1px;
+}
+.header-sub{
+  font-size:13px;
+  opacity:0.9;
+  margin-top:4px;
+}
+.tabs{
+  display:flex;
+  background:var(--card-bg);
+  margin:-30px 16px 16px;
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  position:relative;
+  z-index:10;
+  overflow:hidden;
+}
+.tab{
+  flex:1;
+  text-align:center;
+  padding:14px 0;
+  cursor:pointer;
+  transition:all 0.3s;
+  border-bottom:3px solid transparent;
+  position:relative;
+}
+.tab.active{
+  border-bottom-color:var(--primary);
+  background:rgba(42,157,143,0.06);
+}
+.tab.active .tab-date{
+  color:var(--primary);
+  font-weight:700;
+}
+.tab-date{
+  font-size:18px;
+  color:var(--text);
+  font-weight:600;
+  line-height:1.2;
+}
+.tab-sub{
+  font-size:11px;
+  color:var(--text-muted);
+  margin-top:2px;
+}
+.tab-content{
+  padding:0 16px;
+}
+.tab-pane{
+  display:none;
+}
+.tab-pane.active{
+  display:block;
+  animation:fadeIn 0.3s ease;
+}
+@keyframes fadeIn{
+  from{opacity:0;transform:translateY(10px);}
+  to{opacity:1;transform:translateY(0);}
+}
+.card{
+  background:var(--card-bg);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  margin-bottom:16px;
+  overflow:hidden;
+}
+.img-wrap{
+  position:relative;
+  width:100%;
+  height:240px;
+  background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  cursor:pointer;
+  overflow:hidden;
+}
+.card:nth-child(2) .img-wrap{background:linear-gradient(135deg, #f093fb 0%, #f5576c 100%);}
+.card:nth-child(3) .img-wrap{background:linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);}
+.card:nth-child(4) .img-wrap{background:linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);}
+.card:nth-child(5) .img-wrap{background:linear-gradient(135deg, #fa709a 0%, #fee140 100%);}
+.card:nth-child(6) .img-wrap{background:linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);}
+.card:nth-child(7) .img-wrap{background:linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);}
+.card:nth-child(8) .img-wrap{background:linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%);}
+.card-img{
+  position:absolute;
+  top:0;left:0;
+  width:100%;height:100%;
+  object-fit:cover;
+  display:none;
+  z-index:1;
+}
+.img-placeholder{
+  position:absolute;
+  top:0;left:0;
+  width:100%;height:100%;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  color:rgba(255,255,255,0.9);
+  z-index:0;
+}
+.ph-icon{
+  font-size:48px;
+  margin-bottom:8px;
+  opacity:0.8;
+}
+.ph-text{
+  font-size:14px;
+  opacity:0.7;
+}
+.replace-btn{
+  position:absolute;
+  top:12px;
+  right:12px;
+  width:36px;
+  height:36px;
+  background:rgba(255,255,255,0.95);
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:16px;
+  box-shadow:0 2px 8px rgba(0,0,0,0.15);
+  cursor:pointer;
+  z-index:3;
+  transition:transform 0.2s;
+}
+.replace-btn:active{
+  transform:scale(0.9);
+}
+.nav-badge{
+  position:absolute;
+  bottom:12px;
+  left:50%;
+  transform:translateX(-50%);
+  background:rgba(0,0,0,0.5);
+  color:white;
+  padding:6px 14px;
+  border-radius:20px;
+  font-size:12px;
+  z-index:2;
+  backdrop-filter:blur(4px);
+  -webkit-backdrop-filter:blur(4px);
+  white-space:nowrap;
+}
+.card-body{
+  padding:16px;
+}
+.card-title{
+  font-size:20px;
+  font-weight:700;
+  color:var(--text);
+  margin-bottom:6px;
+  line-height:1.3;
+}
+.card-desc{
+  font-size:14px;
+  color:var(--text-secondary);
+  line-height:1.5;
+  margin-bottom:8px;
+}
+.card-addr{
+  font-size:13px;
+  color:var(--text-muted);
+  line-height:1.4;
+  display:flex;
+  align-items:flex-start;
+  gap:4px;
+}
+/* 导航弹窗 */
+.modal-overlay{
+  position:fixed;
+  top:0;left:0;
+  width:100%;height:100%;
+  background:rgba(0,0,0,0.5);
+  display:none;
+  align-items:flex-end;
+  justify-content:center;
+  z-index:1000;
+  opacity:0;
+  transition:opacity 0.3s;
+}
+.modal-overlay.show{
+  display:flex;
+  opacity:1;
+}
+.modal-sheet{
+  background:white;
+  width:100%;
+  border-radius:var(--radius) var(--radius) 0 0;
+  padding:16px 0 24px;
+  transform:translateY(100%);
+  transition:transform 0.3s ease;
+}
+.modal-overlay.show .modal-sheet{
+  transform:translateY(0);
+}
+.modal-title{
+  text-align:center;
+  font-size:16px;
+  font-weight:600;
+  color:var(--text-muted);
+  padding-bottom:12px;
+  border-bottom:1px solid #eee;
+  margin:0 16px 8px;
+}
+.modal-addr{
+  text-align:center;
+  font-size:14px;
+  color:var(--text);
+  padding:8px 16px 12px;
+  font-weight:500;
+  line-height:1.5;
+}
+.modal-btn{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  padding:16px;
+  margin:0 16px 8px;
+  border-radius:12px;
+  font-size:16px;
+  font-weight:500;
+  cursor:pointer;
+  transition:background 0.2s;
+  user-select:none;
+  -webkit-user-select:none;
+}
+.modal-btn:active{
+  opacity:0.8;
+}
+.btn-baidu{
+  background:#2932e1;
+  color:white;
+}
+.btn-amap{
+  background:#28aaff;
+  color:white;
+}
+.btn-tencent{
+  background:#3cb950;
+  color:white;
+}
+.btn-cancel{
+  background:#f2f3f5;
+  color:var(--text);
+  margin-top:4px;
+}
+/* 隐藏的文件输入 */
+#fileInput{display:none;}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="header-title">🚗 崇明3日游行程</div>
+  <div class="header-sub">2026年6月19日 - 6月21日</div>
+</div>
+
+<div class="tabs">
+<div class="tab active" data-target="day1"><div class="tab-date">6.19</div><div class="tab-sub">第一天</div></div>
+<div class="tab " data-target="day2"><div class="tab-date">6.20</div><div class="tab-sub">第二天</div></div>
+<div class="tab " data-target="day3"><div class="tab-date">6.21</div><div class="tab-sub">第三天</div></div>
+<div class="tab " data-target="backup"><div class="tab-date">备选</div><div class="tab-sub">景点</div></div>
+</div>
+
+<div class="tab-content">
+<div class="tab-pane" id="day1">
+<div class="card">
+  <div class="img-wrap" onclick="openNav('上海市宝山区张庙街道爱辉路28号锦辉绿园', '崇明自驾游出发点')">
+    <img class="card-img" id="img_d1_0" data-key="d1_0" alt="崇明自驾游出发点">
+    <div class="img-placeholder" id="ph_d1_0">
+      <div class="ph-icon">📷</div>
+      <div class="ph-text">点击替换图片</div>
+    </div>
+    <div class="replace-btn" onclick="event.stopPropagation(); triggerReplace('d1_0')">🔄</div>
+    <div class="nav-badge">点击查看导航</div>
+  </div>
+  <div class="card-body">
+    <div class="card-title">崇明自驾游出发点</div>
+    <div class="card-desc">端午节早上10点从上海出发地点，各自自行出发</div>
+    <div class="card-addr">📍 上海市宝山区张庙街道爱辉路28号锦辉绿园</div>
+  </div>
+</div>
+<div class="card">
+  <div class="img-wrap" onclick="openNav('上海市崇明区向化镇向民路213号', '网红-光头馄饨')">
+    <img class="card-img" id="img_d1_1" data-key="d1_1" alt="网红-光头馄饨">
+    <div class="img-placeholder" id="ph_d1_1">
+      <div class="ph-icon">📷</div>
+      <div class="ph-text">点击替换图片</div>
+    </div>
+    <div class="replace-btn" onclick="event.stopPropagation(); triggerReplace('d1_1')">🔄</div>
+    <div class="nav-badge">点击查看导航</div>
+  </div>
+  <div class="card-body">
+    <div class="card-title">网红-光头馄饨</div>
+    <div class="card-desc">6.19午饭地址，网红光头馄饨。上海开到崇明酒店途中正好经过。无法预定。</div>
+    <div class="card-addr">📍 上海市崇明区向化镇向民路213号</div>
+  </div>
+</div>
+<div class="card">
+  <div class="img-wrap" onclick="openNav('上海市崇明区新河镇新民村新新1138号1室', '入住酒店：玄奥乡村酒店')">
+    <img class="card-img" id="img_d1_2" data-key="d1_2" alt="入住酒店：玄奥乡村酒店">
+    <div class="img-placeholder" id="ph_d1_2">
+      <div class="ph-icon">📷</div>
+      <div class="ph-text">点击替换图片</div>
+    </div>
+    <div class="replace-btn" onclick="event.stopPropagation(); triggerReplace('d1_2')">🔄</div>
+    <div class="nav-badge">点击查看导航</div>
+  </div>
+  <div class="card-body">
+    <div class="card-title">入住酒店：玄奥乡村酒店</div>
+    <div class="card-desc">酒店。已预订别墅套房+1小房间</div>
+    <div class="card-addr">📍 上海市崇明区新河镇新民村新新1138号1室</div>
+  </div>
+</div>
+<div class="card">
+  <div class="img-wrap" onclick="openNav('上海市崇明区港沿镇鲁屿村南247米', '躺稻田里·咖啡驿站')">
+    <img class="card-img" id="img_d1_3" data-key="d1_3" alt="躺稻田里·咖啡驿站">
+    <div class="img-placeholder" id="ph_d1_3">
+      <div class="ph-icon">📷</div>
+      <div class="ph-text">点击替换图片</div>
+    </div>
+    <div class="replace-btn" onclick="event.stopPropagation(); triggerReplace('d1_3')">🔄</div>
+    <div class="nav-badge">点击查看导航</div>
+  </div>
+  <div class="card-body">
+    <div class="card-title">躺稻田里·咖啡驿站</div>
+    <div class="card-desc">6.19下午游玩地点</div>
+    <div class="card-addr">📍 上海市崇明区港沿镇鲁屿村南247米</div>
+  </div>
+</div>
+<div class="card">
+  <div class="img-wrap" onclick="openNav('上海市崇明区建设镇建设公路2018号', '晚餐：拾柒鲜·小海鲜')">
+    <img class="card-img" id="img_d1_4" data-key="d1_4" alt="晚餐：拾柒鲜·小海鲜">
+    <div class="img-placeholder" id="ph_d1_4">
+      <div class="ph-icon">📷</div>
+      <div class="ph-text">点击替换图片</div>
+    </div>
+    <div class="replace-btn" onclick="event.stopPropagation(); triggerReplace('d1_4')">🔄</div>
+    <div class="nav-badge">点击查看导航</div>
+  </div>
+  <div class="card-body">
+    <div class="card-title">晚餐：拾柒鲜·小海鲜</div>
+    <div class="card-desc">6.19晚餐地点，已预订包房</div>
+    <div class="card-addr">📍 上海市崇明区建设镇建设公路2018号</div>
+  </div>
+</div>
+</div>
+<div class="tab-pane" id="day2">
+<div class="card">
+  <div class="img-wrap" onclick="openNav('上海市崇明区庙镇宏海公路515号', '515咖啡艺术中心')">
+    <img class="card-img" id="img_d2_0" data-key="d2_0" alt="515咖啡艺术中心">
+    <div class="img-placeholder" id="ph_d2_0">
+      <div class="ph-icon">📷</div>
+      <div class="ph-text">点击替换图片</div>
+    </div>
+    <div class="replace-btn" onclick="event.stopPropagation(); triggerReplace('d2_0')">🔄</div>
+    <div class="nav-badge">点击查看导航</div>
+  </div>
+  <div class="card-body">
+    <div class="card-title">515咖啡艺术中心</div>
+    <div class="card-desc">6.20上午游玩地点</div>
+    <div class="card-addr">📍 上海市崇明区庙镇宏海公路515号</div>
+  </div>
+</div>
+<div class="card">
+  <div class="img-wrap" onclick="openNav('上海市崇明区庙镇庙南村1438号', '上海西岸氧吧')">
+    <img class="card-img" id="img_d2_1" data-key="d2_1" alt="上海西岸氧吧">
+    <div class="img-placeholder" id="ph_d2_1">
+      <div class="ph-icon">📷</div>
+      <div class="ph-text">点击替换图片</div>
+    </div>
+    <div class="replace-btn" onclick="event.stopPropagation(); triggerReplace('d2_1')">🔄</div>
+    <div class="nav-badge">点击查看导航</div>
+  </div>
+  <div class="card-body">
+    <div class="card-title">上海西岸氧吧</div>
+    <div class="card-desc">6.20上午游玩地点2</div>
+    <div class="card-addr">📍 上海市崇明区庙镇庙南村1438号</div>
+  </div>
+</div>
+<div class="card">
+  <div class="img-wrap" onclick="openNav('上海市崇明区庙镇庙南北路与宏海公路交叉口西420米', '午餐：苗圃餐厅')">
+    <img class="card-img" id="img_d2_2" data-key="d2_2" alt="午餐：苗圃餐厅">
+    <div class="img-placeholder" id="ph_d2_2">
+      <div class="ph-icon">📷</div>
+      <div class="ph-text">点击替换图片</div>
+    </div>
+    <div class="replace-btn" onclick="event.stopPropagation(); triggerReplace('d2_2')">🔄</div>
+    <div class="nav-badge">点击查看导航</div>
+  </div>
+  <div class="card-body">
+    <div class="card-title">午餐：苗圃餐厅</div>
+    <div class="card-desc">6.20午餐地点，已预定包房，西岸氧吧内</div>
+    <div class="card-addr">📍 上海市崇明区庙镇庙南北路与宏海公路交叉口西420米</div>
+  </div>
+</div>
+<div class="card">
+  <div class="img-wrap" onclick="openNav('上海市崇明区城桥镇八一路337号', '新崇浴室烧烤店')">
+    <img class="card-img" id="img_d2_3" data-key="d2_3" alt="新崇浴室烧烤店">
+    <div class="img-placeholder" id="ph_d2_3">
+      <div class="ph-icon">📷</div>
+      <div class="ph-text">点击替换图片</div>
+    </div>
+    <div class="replace-btn" onclick="event.stopPropagation(); triggerReplace('d2_3')">🔄</div>
+    <div class="nav-badge">点击查看导航</div>
+  </div>
+  <div class="card-body">
+    <div class="card-title">新崇浴室烧烤店</div>
+    <div class="card-desc">6.20下午游玩地点，八一路步行街店</div>
+    <div class="card-addr">📍 上海市崇明区城桥镇八一路337号</div>
+  </div>
+</div>
+<div class="card">
+  <div class="img-wrap" onclick="openNav('上海市崇明区堡镇新港路157号7幢', '崇明印糕-同龄斋')">
+    <img class="card-img" id="img_d2_4" data-key="d2_4" alt="崇明印糕-同龄斋">
+    <div class="img-placeholder" id="ph_d2_4">
+      <div class="ph-icon">📷</div>
+      <div class="ph-text">点击替换图片</div>
+    </div>
+    <div class="replace-btn" onclick="event.stopPropagation(); triggerReplace('d2_4')">🔄</div>
+    <div class="nav-badge">点击查看导航</div>
+  </div>
+  <div class="card-body">
+    <div class="card-title">崇明印糕-同龄斋</div>
+    <div class="card-desc">6.20下午采购点</div>
+    <div class="card-addr">📍 上海市崇明区堡镇新港路157号7幢</div>
+  </div>
+</div>
+<div class="card">
+  <div class="img-wrap" onclick="openNav('上海市崇明区堡镇黄金海岸露营点', '黄金海岸露营点')">
+    <img class="card-img" id="img_d2_5" data-key="d2_5" alt="黄金海岸露营点">
+    <div class="img-placeholder" id="ph_d2_5">
+      <div class="ph-icon">📷</div>
+      <div class="ph-text">点击替换图片</div>
+    </div>
+    <div class="replace-btn" onclick="event.stopPropagation(); triggerReplace('d2_5')">🔄</div>
+    <div class="nav-badge">点击查看导航</div>
+  </div>
+  <div class="card-body">
+    <div class="card-title">黄金海岸露营点</div>
+    <div class="card-desc">6.20钓鱼点</div>
+    <div class="card-addr">📍 上海市崇明区堡镇黄金海岸露营点</div>
+  </div>
+</div>
+<div class="card">
+  <div class="img-wrap" onclick="openNav('上海市崇明区堡镇南路1号', '网红景点：丁坝')">
+    <img class="card-img" id="img_d2_6" data-key="d2_6" alt="网红景点：丁坝">
+    <div class="img-placeholder" id="ph_d2_6">
+      <div class="ph-icon">📷</div>
+      <div class="ph-text">点击替换图片</div>
+    </div>
+    <div class="replace-btn" onclick="event.stopPropagation(); triggerReplace('d2_6')">🔄</div>
+    <div class="nav-badge">点击查看导航</div>
+  </div>
+  <div class="card-body">
+    <div class="card-title">网红景点：丁坝</div>
+    <div class="card-desc">晚上有夜市</div>
+    <div class="card-addr">📍 上海市崇明区堡镇南路1号</div>
+  </div>
+</div>
+<div class="card">
+  <div class="img-wrap" onclick="openNav('上海市崇明区竖新镇新征村', '晚餐：東禾九谷')">
+    <img class="card-img" id="img_d2_7" data-key="d2_7" alt="晚餐：東禾九谷">
+    <div class="img-placeholder" id="ph_d2_7">
+      <div class="ph-icon">📷</div>
+      <div class="ph-text">点击替换图片</div>
+    </div>
+    <div class="replace-btn" onclick="event.stopPropagation(); triggerReplace('d2_7')">🔄</div>
+    <div class="nav-badge">点击查看导航</div>
+  </div>
+  <div class="card-body">
+    <div class="card-title">晚餐：東禾九谷</div>
+    <div class="card-desc">6.20晚餐。已预订大厅</div>
+    <div class="card-addr">📍 上海市崇明区竖新镇新征村</div>
+  </div>
+</div>
+</div>
+<div class="tab-pane" id="day3">
+<div class="card">
+  <div class="img-wrap" onclick="openNav('上海市崇明区中兴镇汲浜公路', '布土文创·SPACE')">
+    <img class="card-img" id="img_d3_0" data-key="d3_0" alt="布土文创·SPACE">
+    <div class="img-placeholder" id="ph_d3_0">
+      <div class="ph-icon">📷</div>
+      <div class="ph-text">点击替换图片</div>
+    </div>
+    <div class="replace-btn" onclick="event.stopPropagation(); triggerReplace('d3_0')">🔄</div>
+    <div class="nav-badge">点击查看导航</div>
+  </div>
+  <div class="card-body">
+    <div class="card-title">布土文创·SPACE</div>
+    <div class="card-desc">6.21早上游玩地点，已预定</div>
+    <div class="card-addr">📍 上海市崇明区中兴镇汲浜公路</div>
+  </div>
+</div>
+<div class="card">
+  <div class="img-wrap" onclick="openNav('上海市崇明区陈家镇瀛东村54号', '午餐：瀛东度假村')">
+    <img class="card-img" id="img_d3_1" data-key="d3_1" alt="午餐：瀛东度假村">
+    <div class="img-placeholder" id="ph_d3_1">
+      <div class="ph-icon">📷</div>
+      <div class="ph-text">点击替换图片</div>
+    </div>
+    <div class="replace-btn" onclick="event.stopPropagation(); triggerReplace('d3_1')">🔄</div>
+    <div class="nav-badge">点击查看导航</div>
+  </div>
+  <div class="card-body">
+    <div class="card-title">午餐：瀛东度假村</div>
+    <div class="card-desc">6.21午餐地点+游玩地点，吃好午饭（已预定）直接返程回上海，怕堵车</div>
+    <div class="card-addr">📍 上海市崇明区陈家镇瀛东村54号</div>
+  </div>
+</div>
+<div class="card">
+  <div class="img-wrap" onclick="openNav('上海市崇明区陈家镇陈西村1338号', '午餐备选：崇明胡式土菜')">
+    <img class="card-img" id="img_d3_2" data-key="d3_2" alt="午餐备选：崇明胡式土菜">
+    <div class="img-placeholder" id="ph_d3_2">
+      <div class="ph-icon">📷</div>
+      <div class="ph-text">点击替换图片</div>
+    </div>
+    <div class="replace-btn" onclick="event.stopPropagation(); triggerReplace('d3_2')">🔄</div>
+    <div class="nav-badge">点击查看导航</div>
+  </div>
+  <div class="card-body">
+    <div class="card-title">午餐备选：崇明胡式土菜</div>
+    <div class="card-desc">6.21午餐备选地点（陈家镇店）</div>
+    <div class="card-addr">📍 上海市崇明区陈家镇陈西村1338号</div>
+  </div>
+</div>
+</div>
+<div class="tab-pane" id="backup">
+<div class="card">
+  <div class="img-wrap" onclick="openNav('上海市崇明区竖新镇仙桥村636号', 'JOYIN烧烤音乐酒吧')">
+    <img class="card-img" id="img_bk_0" data-key="bk_0" alt="JOYIN烧烤音乐酒吧">
+    <div class="img-placeholder" id="ph_bk_0">
+      <div class="ph-icon">📷</div>
+      <div class="ph-text">点击替换图片</div>
+    </div>
+    <div class="replace-btn" onclick="event.stopPropagation(); triggerReplace('bk_0')">🔄</div>
+    <div class="nav-badge">点击查看导航</div>
+  </div>
+  <div class="card-body">
+    <div class="card-title">JOYIN烧烤音乐酒吧</div>
+    <div class="card-desc">备选地点（仙桥店）</div>
+    <div class="card-addr">📍 上海市崇明区竖新镇仙桥村636号</div>
+  </div>
+</div>
+<div class="card">
+  <div class="img-wrap" onclick="openNav('上海市崇明区港西镇海上兰乔别墅营销中心', 'Joyin网红咖啡点')">
+    <img class="card-img" id="img_bk_1" data-key="bk_1" alt="Joyin网红咖啡点">
+    <div class="img-placeholder" id="ph_bk_1">
+      <div class="ph-icon">📷</div>
+      <div class="ph-text">点击替换图片</div>
+    </div>
+    <div class="replace-btn" onclick="event.stopPropagation(); triggerReplace('bk_1')">🔄</div>
+    <div class="nav-badge">点击查看导航</div>
+  </div>
+  <div class="card-body">
+    <div class="card-title">Joyin网红咖啡点</div>
+    <div class="card-desc">备选地点</div>
+    <div class="card-addr">📍 上海市崇明区港西镇海上兰乔别墅营销中心</div>
+  </div>
+</div>
+<div class="card">
+  <div class="img-wrap" onclick="openNav('上海市崇明区堡镇达山路332号虹宝苑', '堡镇网红咖啡店SHAN RAN')">
+    <img class="card-img" id="img_bk_2" data-key="bk_2" alt="堡镇网红咖啡店SHAN RAN">
+    <div class="img-placeholder" id="ph_bk_2">
+      <div class="ph-icon">📷</div>
+      <div class="ph-text">点击替换图片</div>
+    </div>
+    <div class="replace-btn" onclick="event.stopPropagation(); triggerReplace('bk_2')">🔄</div>
+    <div class="nav-badge">点击查看导航</div>
+  </div>
+  <div class="card-body">
+    <div class="card-title">堡镇网红咖啡店SHAN RAN</div>
+    <div class="card-desc">备选地点</div>
+    <div class="card-addr">📍 上海市崇明区堡镇达山路332号虹宝苑</div>
+  </div>
+</div>
+<div class="card">
+  <div class="img-wrap" onclick="openNav('上海市崇明区城桥镇八一路279号', '崇明岛八一路步行街')">
+    <img class="card-img" id="img_bk_3" data-key="bk_3" alt="崇明岛八一路步行街">
+    <div class="img-placeholder" id="ph_bk_3">
+      <div class="ph-icon">📷</div>
+      <div class="ph-text">点击替换图片</div>
+    </div>
+    <div class="replace-btn" onclick="event.stopPropagation(); triggerReplace('bk_3')">🔄</div>
+    <div class="nav-badge">点击查看导航</div>
+  </div>
+  <div class="card-body">
+    <div class="card-title">崇明岛八一路步行街</div>
+    <div class="card-desc">备选地点</div>
+    <div class="card-addr">📍 上海市崇明区城桥镇八一路279号</div>
+  </div>
+</div>
+<div class="card">
+  <div class="img-wrap" onclick="openNav('上海市崇明区建设镇滧东村520号', '崇明松慢SOMLAND民宿')">
+    <img class="card-img" id="img_bk_4" data-key="bk_4" alt="崇明松慢SOMLAND民宿">
+    <div class="img-placeholder" id="ph_bk_4">
+      <div class="ph-icon">📷</div>
+      <div class="ph-text">点击替换图片</div>
+    </div>
+    <div class="replace-btn" onclick="event.stopPropagation(); triggerReplace('bk_4')">🔄</div>
+    <div class="nav-badge">点击查看导航</div>
+  </div>
+  <div class="card-body">
+    <div class="card-title">崇明松慢SOMLAND民宿</div>
+    <div class="card-desc">备选地点</div>
+    <div class="card-addr">📍 上海市崇明区建设镇滧东村520号</div>
+  </div>
+</div>
+<div class="card">
+  <div class="img-wrap" onclick="openNav('上海市崇明区中兴镇永胜北路', '椿庭朴门')">
+    <img class="card-img" id="img_bk_5" data-key="bk_5" alt="椿庭朴门">
+    <div class="img-placeholder" id="ph_bk_5">
+      <div class="ph-icon">📷</div>
+      <div class="ph-text">点击替换图片</div>
+    </div>
+    <div class="replace-btn" onclick="event.stopPropagation(); triggerReplace('bk_5')">🔄</div>
+    <div class="nav-badge">点击查看导航</div>
+  </div>
+  <div class="card-body">
+    <div class="card-title">椿庭朴门</div>
+    <div class="card-desc">备选地点</div>
+    <div class="card-addr">📍 上海市崇明区中兴镇永胜北路</div>
+  </div>
+</div>
+<div class="card">
+  <div class="img-wrap" onclick="openNav('上海市崇明区东平林场北沿公路2188号', '东平国家森林公园')">
+    <img class="card-img" id="img_bk_6" data-key="bk_6" alt="东平国家森林公园">
+    <div class="img-placeholder" id="ph_bk_6">
+      <div class="ph-icon">📷</div>
+      <div class="ph-text">点击替换图片</div>
+    </div>
+    <div class="replace-btn" onclick="event.stopPropagation(); triggerReplace('bk_6')">🔄</div>
+    <div class="nav-badge">点击查看导航</div>
+  </div>
+  <div class="card-body">
+    <div class="card-title">东平国家森林公园</div>
+    <div class="card-desc">备选游玩地点，通常营业时间到17:00</div>
+    <div class="card-addr">📍 上海市崇明区东平林场北沿公路2188号</div>
+  </div>
+</div>
+<div class="card">
+  <div class="img-wrap" onclick="openNav('上海市崇明区上实现代农业园区东旺路', '上海东滩湿地公园')">
+    <img class="card-img" id="img_bk_7" data-key="bk_7" alt="上海东滩湿地公园">
+    <div class="img-placeholder" id="ph_bk_7">
+      <div class="ph-icon">📷</div>
+      <div class="ph-text">点击替换图片</div>
+    </div>
+    <div class="replace-btn" onclick="event.stopPropagation(); triggerReplace('bk_7')">🔄</div>
+    <div class="nav-badge">点击查看导航</div>
+  </div>
+  <div class="card-body">
+    <div class="card-title">上海东滩湿地公园</div>
+    <div class="card-desc">备选地点</div>
+    <div class="card-addr">📍 上海市崇明区上实现代农业园区东旺路</div>
+  </div>
+</div>
+<div class="card">
+  <div class="img-wrap" onclick="openNav('上海市崇明区庙镇小星公路1500号', '上海香朵开心农场')">
+    <img class="card-img" id="img_bk_8" data-key="bk_8" alt="上海香朵开心农场">
+    <div class="img-placeholder" id="ph_bk_8">
+      <div class="ph-icon">📷</div>
+      <div class="ph-text">点击替换图片</div>
+    </div>
+    <div class="replace-btn" onclick="event.stopPropagation(); triggerReplace('bk_8')">🔄</div>
+    <div class="nav-badge">点击查看导航</div>
+  </div>
+  <div class="card-body">
+    <div class="card-title">上海香朵开心农场</div>
+    <div class="card-desc">备选地点</div>
+    <div class="card-addr">📍 上海市崇明区庙镇小星公路1500号</div>
+  </div>
+</div>
+<div class="card">
+  <div class="img-wrap" onclick="openNav('上海市崇明区城桥镇涛声路1188号', '寿安寺')">
+    <img class="card-img" id="img_bk_9" data-key="bk_9" alt="寿安寺">
+    <div class="img-placeholder" id="ph_bk_9">
+      <div class="ph-icon">📷</div>
+      <div class="ph-text">点击替换图片</div>
+    </div>
+    <div class="replace-btn" onclick="event.stopPropagation(); triggerReplace('bk_9')">🔄</div>
+    <div class="nav-badge">点击查看导航</div>
+  </div>
+  <div class="card-body">
+    <div class="card-title">寿安寺</div>
+    <div class="card-desc">备选地点</div>
+    <div class="card-addr">📍 上海市崇明区城桥镇涛声路1188号</div>
+  </div>
+</div>
+<div class="card">
+  <div class="img-wrap" onclick="openNav('上海市崇明区陈家镇揽海路5弄', '滩玩乐园-亲子世界')">
+    <img class="card-img" id="img_bk_10" data-key="bk_10" alt="滩玩乐园-亲子世界">
+    <div class="img-placeholder" id="ph_bk_10">
+      <div class="ph-icon">📷</div>
+      <div class="ph-text">点击替换图片</div>
+    </div>
+    <div class="replace-btn" onclick="event.stopPropagation(); triggerReplace('bk_10')">🔄</div>
+    <div class="nav-badge">点击查看导航</div>
+  </div>
+  <div class="card-body">
+    <div class="card-title">滩玩乐园-亲子世界</div>
+    <div class="card-desc">备选地点</div>
+    <div class="card-addr">📍 上海市崇明区陈家镇揽海路5弄</div>
+  </div>
+</div>
+<div class="card">
+  <div class="img-wrap" onclick="openNav('上海市崇明区城桥镇崇明大道666号', '万达广场')">
+    <img class="card-img" id="img_bk_11" data-key="bk_11" alt="万达广场">
+    <div class="img-placeholder" id="ph_bk_11">
+      <div class="ph-icon">📷</div>
+      <div class="ph-text">点击替换图片</div>
+    </div>
+    <div class="replace-btn" onclick="event.stopPropagation(); triggerReplace('bk_11')">🔄</div>
+    <div class="nav-badge">点击查看导航</div>
+  </div>
+  <div class="card-body">
+    <div class="card-title">万达广场</div>
+    <div class="card-desc">备选地点（上海崇明店）</div>
+    <div class="card-addr">📍 上海市崇明区城桥镇崇明大道666号</div>
+  </div>
+</div>
+<div class="card">
+  <div class="img-wrap" onclick="openNav('上海市崇明区绿华镇堡湖路588号', '西沙明珠湖景区-西沙湿地')">
+    <img class="card-img" id="img_bk_12" data-key="bk_12" alt="西沙明珠湖景区-西沙湿地">
+    <div class="img-placeholder" id="ph_bk_12">
+      <div class="ph-icon">📷</div>
+      <div class="ph-text">点击替换图片</div>
+    </div>
+    <div class="replace-btn" onclick="event.stopPropagation(); triggerReplace('bk_12')">🔄</div>
+    <div class="nav-badge">点击查看导航</div>
+  </div>
+  <div class="card-body">
+    <div class="card-title">西沙明珠湖景区-西沙湿地</div>
+    <div class="card-desc">备选地点</div>
+    <div class="card-addr">📍 上海市崇明区绿华镇堡湖路588号</div>
+  </div>
+</div>
+<div class="card">
+  <div class="img-wrap" onclick="openNav('上海市崇明区港西镇港东公路905号（一尺花园碧园店停车场）', '一尺花园')">
+    <img class="card-img" id="img_bk_13" data-key="bk_13" alt="一尺花园">
+    <div class="img-placeholder" id="ph_bk_13">
+      <div class="ph-icon">📷</div>
+      <div class="ph-text">点击替换图片</div>
+    </div>
+    <div class="replace-btn" onclick="event.stopPropagation(); triggerReplace('bk_13')">🔄</div>
+    <div class="nav-badge">点击查看导航</div>
+  </div>
+  <div class="card-body">
+    <div class="card-title">一尺花园</div>
+    <div class="card-desc">备选地点（碧园店），人很多</div>
+    <div class="card-addr">📍 上海市崇明区港西镇港东公路905号（一尺花园碧园店停车场）</div>
+  </div>
+</div>
+<div class="card">
+  <div class="img-wrap" onclick="openNav('上海市崇明区城桥镇崇明新城公园', '崇明新城公园')">
+    <img class="card-img" id="img_bk_14" data-key="bk_14" alt="崇明新城公园">
+    <div class="img-placeholder" id="ph_bk_14">
+      <div class="ph-icon">📷</div>
+      <div class="ph-text">点击替换图片</div>
+    </div>
+    <div class="replace-btn" onclick="event.stopPropagation(); triggerReplace('bk_14')">🔄</div>
+    <div class="nav-badge">点击查看导航</div>
+  </div>
+  <div class="card-body">
+    <div class="card-title">崇明新城公园</div>
+    <div class="card-desc">备选钓鱼地点1</div>
+    <div class="card-addr">📍 上海市崇明区城桥镇崇明新城公园</div>
+  </div>
+</div>
+</div>
+</div>
+
+<!-- 导航弹窗 -->
+<div class="modal-overlay" id="navModal" onclick="closeNav(event)">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="modal-title">选择导航地图</div>
+    <div class="modal-addr" id="modalAddr"></div>
+    <div class="modal-btn btn-baidu" onclick="goBaidu()">🗺️ 百度地图</div>
+    <div class="modal-btn btn-amap" onclick="goAmap()">🧭 高德地图</div>
+    <div class="modal-btn btn-tencent" onclick="goTencent()">🌲 腾讯地图（微信）</div>
+    <div class="modal-btn btn-cancel" onclick="closeNav()">取消</div>
+  </div>
+</div>
+
+<input type="file" id="fileInput" accept="image/*">
+
+<script>
+// 数据
+const data = {"day1": [{"name": "崇明自驾游出发点", "desc": "端午节早上10点从上海出发地点，各自自行出发", "addr": "上海市宝山区张庙街道爱辉路28号锦辉绿园", "key": "d1_0"}, {"name": "网红-光头馄饨", "desc": "6.19午饭地址，网红光头馄饨。上海开到崇明酒店途中正好经过。无法预定。", "addr": "上海市崇明区向化镇向民路213号", "key": "d1_1"}, {"name": "入住酒店：玄奥乡村酒店", "desc": "酒店。已预订别墅套房+1小房间", "addr": "上海市崇明区新河镇新民村新新1138号1室", "key": "d1_2"}, {"name": "躺稻田里·咖啡驿站", "desc": "6.19下午游玩地点", "addr": "上海市崇明区港沿镇鲁屿村南247米", "key": "d1_3"}, {"name": "晚餐：拾柒鲜·小海鲜", "desc": "6.19晚餐地点，已预订包房", "addr": "上海市崇明区建设镇建设公路2018号", "key": "d1_4"}], "day2": [{"name": "515咖啡艺术中心", "desc": "6.20上午游玩地点", "addr": "上海市崇明区庙镇宏海公路515号", "key": "d2_0"}, {"name": "上海西岸氧吧", "desc": "6.20上午游玩地点2", "addr": "上海市崇明区庙镇庙南村1438号", "key": "d2_1"}, {"name": "午餐：苗圃餐厅", "desc": "6.20午餐地点，已预定包房，西岸氧吧内", "addr": "上海市崇明区庙镇庙南北路与宏海公路交叉口西420米", "key": "d2_2"}, {"name": "新崇浴室烧烤店", "desc": "6.20下午游玩地点，八一路步行街店", "addr": "上海市崇明区城桥镇八一路337号", "key": "d2_3"}, {"name": "崇明印糕-同龄斋", "desc": "6.20下午采购点", "addr": "上海市崇明区堡镇新港路157号7幢", "key": "d2_4"}, {"name": "黄金海岸露营点", "desc": "6.20钓鱼点", "addr": "上海市崇明区堡镇黄金海岸露营点", "key": "d2_5"}, {"name": "网红景点：丁坝", "desc": "晚上有夜市", "addr": "上海市崇明区堡镇南路1号", "key": "d2_6"}, {"name": "晚餐：東禾九谷", "desc": "6.20晚餐。已预订大厅", "addr": "上海市崇明区竖新镇新征村", "key": "d2_7"}], "day3": [{"name": "布土文创·SPACE", "desc": "6.21早上游玩地点，已预定", "addr": "上海市崇明区中兴镇汲浜公路", "key": "d3_0"}, {"name": "午餐：瀛东度假村", "desc": "6.21午餐地点+游玩地点，吃好午饭（已预定）直接返程回上海，怕堵车", "addr": "上海市崇明区陈家镇瀛东村54号", "key": "d3_1"}, {"name": "午餐备选：崇明胡式土菜", "desc": "6.21午餐备选地点（陈家镇店）", "addr": "上海市崇明区陈家镇陈西村1338号", "key": "d3_2"}], "backup": [{"name": "JOYIN烧烤音乐酒吧", "desc": "备选地点（仙桥店）", "addr": "上海市崇明区竖新镇仙桥村636号", "key": "bk_0"}, {"name": "Joyin网红咖啡点", "desc": "备选地点", "addr": "上海市崇明区港西镇海上兰乔别墅营销中心", "key": "bk_1"}, {"name": "堡镇网红咖啡店SHAN RAN", "desc": "备选地点", "addr": "上海市崇明区堡镇达山路332号虹宝苑", "key": "bk_2"}, {"name": "崇明岛八一路步行街", "desc": "备选地点", "addr": "上海市崇明区城桥镇八一路279号", "key": "bk_3"}, {"name": "崇明松慢SOMLAND民宿", "desc": "备选地点", "addr": "上海市崇明区建设镇滧东村520号", "key": "bk_4"}, {"name": "椿庭朴门", "desc": "备选地点", "addr": "上海市崇明区中兴镇永胜北路", "key": "bk_5"}, {"name": "东平国家森林公园", "desc": "备选游玩地点，通常营业时间到17:00", "addr": "上海市崇明区东平林场北沿公路2188号", "key": "bk_6"}, {"name": "上海东滩湿地公园", "desc": "备选地点", "addr": "上海市崇明区上实现代农业园区东旺路", "key": "bk_7"}, {"name": "上海香朵开心农场", "desc": "备选地点", "addr": "上海市崇明区庙镇小星公路1500号", "key": "bk_8"}, {"name": "寿安寺", "desc": "备选地点", "addr": "上海市崇明区城桥镇涛声路1188号", "key": "bk_9"}, {"name": "滩玩乐园-亲子世界", "desc": "备选地点", "addr": "上海市崇明区陈家镇揽海路5弄", "key": "bk_10"}, {"name": "万达广场", "desc": "备选地点（上海崇明店）", "addr": "上海市崇明区城桥镇崇明大道666号", "key": "bk_11"}, {"name": "西沙明珠湖景区-西沙湿地", "desc": "备选地点", "addr": "上海市崇明区绿华镇堡湖路588号", "key": "bk_12"}, {"name": "一尺花园", "desc": "备选地点（碧园店），人很多", "addr": "上海市崇明区港西镇港东公路905号（一尺花园碧园店停车场）", "key": "bk_13"}, {"name": "崇明新城公园", "desc": "备选钓鱼地点1", "addr": "上海市崇明区城桥镇崇明新城公园", "key": "bk_14"}]};
+
+let currentNavAddr = '';
+let currentNavName = '';
+let replaceTargetKey = '';
+
+// Tab切换
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById(tab.dataset.target).classList.add('active');
+  });
+});
+
+// 加载已保存的图片
+function loadSavedImages() {
+  for (const day in data) {
+    data[day].forEach(item => {
+      const key = item.key;
+      const saved = localStorage.getItem('img_' + key);
+      if (saved) {
+        const img = document.getElementById('img_' + key);
+        const ph = document.getElementById('ph_' + key);
+        if (img) { img.src = saved; img.style.display = 'block'; }
+        if (ph) { ph.style.display = 'none'; }
+      }
+    });
+  }
+}
+
+// 图片替换
+document.getElementById('fileInput').addEventListener('change', function(e) {
+  const file = e.target.files[0];
+  if (!file || !replaceTargetKey) return;
+  
+  const reader = new FileReader();
+  reader.onload = function(evt) {
+    const img = new Image();
+    img.onload = function() {
+      const canvas = document.createElement('canvas');
+      const MAX = 900;
+      const scale = Math.min(1, MAX / Math.max(img.width, img.height));
+      canvas.width = img.width * scale;
+      canvas.height = img.height * scale;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      const compressed = canvas.toDataURL('image/jpeg', 0.75);
+      
+      localStorage.setItem('img_' + replaceTargetKey, compressed);
+      const imgEl = document.getElementById('img_' + replaceTargetKey);
+      const phEl = document.getElementById('ph_' + replaceTargetKey);
+      if (imgEl) { imgEl.src = compressed; imgEl.style.display = 'block'; }
+      if (phEl) { phEl.style.display = 'none'; }
+      replaceTargetKey = '';
+      document.getElementById('fileInput').value = '';
+    };
+    img.src = evt.target.result;
+  };
+  reader.readAsDataURL(file);
+});
+
+function triggerReplace(key) {
+  replaceTargetKey = key;
+  document.getElementById('fileInput').click();
+}
+
+// 导航
+function openNav(addr, name) {
+  currentNavAddr = addr;
+  currentNavName = name;
+  document.getElementById('modalAddr').innerHTML = name + '<br>' + addr;
+  const modal = document.getElementById('navModal');
+  modal.style.display = 'flex';
+  setTimeout(() => modal.classList.add('show'), 10);
+}
+
+function closeNav(e) {
+  if (e && e.target !== document.getElementById('navModal')) return;
+  const modal = document.getElementById('navModal');
+  modal.classList.remove('show');
+  setTimeout(() => modal.style.display = 'none', 300);
+}
+
+function goBaidu() {
+  window.open('https://api.map.baidu.com/geocoder?address=' + encodeURIComponent(currentNavAddr) + '&output=html&src=webapp.baidu.openAPIdemo', '_blank');
+  closeNav();
+}
+function goAmap() {
+  window.open('https://uri.amap.com/search?keyword=' + encodeURIComponent(currentNavAddr), '_blank');
+  closeNav();
+}
+function goTencent() {
+  window.open('https://map.wap.qq.com/?q=' + encodeURIComponent(currentNavAddr), '_blank');
+  closeNav();
+}
+
+// 初始化
+loadSavedImages();
+// 默认激活第一个tab
+document.querySelector('.tab').classList.add('active');
+document.querySelector('.tab-pane').classList.add('active');
+</script>
+</body>
+</html>
