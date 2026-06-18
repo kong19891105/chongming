@@ -281,28 +281,41 @@ function loadSavedImages(){
 }
 
 // 图片替换
-document.getElementById('fileInput').addEventListener('change',function(e){
-  const file=e.target.files[0]; if(!file||!replaceTargetKey) return;
-  const reader=new FileReader();
-  reader.onload=function(evt){
-    const img=new Image();
-    img.onload=function(){
-      const canvas=document.createElement('canvas');
-      const MAX=900;
-      const scale=Math.min(1,MAX/Math.max(img.width,img.height));
-      canvas.width=img.width*scale; canvas.height=img.height*scale;
-      const ctx=canvas.getContext('2d'); ctx.drawImage(img,0,0,canvas.width,canvas.height);
-      const compressed=canvas.toDataURL('image/jpeg',0.75);
-      localStorage.setItem('img_'+replaceTargetKey,compressed);
-      const imgEl=document.getElementById('img_'+replaceTargetKey), phEl=document.getElementById('ph_'+replaceTargetKey);
-      if(imgEl){imgEl.src=compressed; imgEl.style.display='block';}
-      if(phEl){phEl.style.display='none';}
-      replaceTargetKey=''; document.getElementById('fileInput').value='';
-      showToast('✅ 图片已替换');
+async function handleReplace(file, key) {
+  // 1. 先尝试在线上传（如果在线）
+  if (onlineMode && supabaseClient) {
+    showToast('⏳ 正在上传...');
+    try {
+      const ok = await uploadOnline(key, file);
+      if (ok) { return; }
+    } catch(e) { console.error('在线上传失败，回退到本地', e); }
+  }
+  // 2. 回退到本地压缩保存
+  const reader = new FileReader();
+  reader.onload = function(evt) {
+    const img = new Image();
+    img.onload = function() {
+      const canvas = document.createElement('canvas');
+      const MAX = 900;
+      const scale = Math.min(1, MAX / Math.max(img.width, img.height));
+      canvas.width = img.width * scale; canvas.height = img.height * scale;
+      const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      const compressed = canvas.toDataURL('image/jpeg', 0.75);
+      localStorage.setItem('img_' + key, compressed);
+      const imgEl = document.getElementById('img_' + key), phEl = document.getElementById('ph_' + key);
+      if (imgEl) { imgEl.src = compressed; imgEl.style.display = 'block'; }
+      if (phEl) { phEl.style.display = 'none'; }
+      showToast('✅ 已保存到本地（数据库未连接）');
     };
-    img.src=evt.target.result;
+    img.src = evt.target.result;
   };
   reader.readAsDataURL(file);
+}
+
+document.getElementById('fileInput').addEventListener('change', async function(e) {
+  const file = e.target.files[0]; if (!file || !replaceTargetKey) return;
+  await handleReplace(file, replaceTargetKey);
+  replaceTargetKey = ''; document.getElementById('fileInput').value = '';
 });
 
 function triggerReplace(key){ replaceTargetKey=key; document.getElementById('fileInput').click(); }
@@ -474,6 +487,7 @@ async function uploadOnline(key, file) {
 // 初始化
 document.querySelector('.tab').classList.add('active');
 document.querySelector('.tab-pane').classList.add('active');
+loadSavedImages();
 initDatabase();
 </script>
 </body>
