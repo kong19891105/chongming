@@ -377,6 +377,14 @@ function clearAllImages(){
   showToast('🗑️ 已清空所有照片');
 }
 
+// ===== 数据库配置（直接填入） =====
+const SUPABASE_URL = 'https://hhhzeeijhpivdpzrzcpt.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_id8zrD4b8wLQ6ujAGOmROQ_E0qG1tlb';
+const BUCKET_NAME = 'trip-photos';
+const TABLE_NAME = 'trip_photos';
+let supabaseClient = null;
+let onlineMode = false;
+
 // ===== 数据库初始化 =====
 async function initDatabase() {
   try {
